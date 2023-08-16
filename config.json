@@ -1,0 +1,115 @@
+{
+
+	"target_database":{
+			"host":"new connection",
+			"user":"root",
+			"password":"Kalaiselvi@10",
+			"database":"target_database"
+	},
+	"database":
+		{
+			"host":"new connection",
+			"user":"root",
+			"password":"Kalaiselvi@10",
+			"database":"Shop"
+		},
+	"Normalized_tables":
+		{
+			"Orders":"tables/Orders.csv",
+			"OrderItem":"tables/OrderItem.csv",
+			"Product":"tables/Product.csv",
+			"Customer":"tables/Customer.csv"
+		},
+
+	"Denormalized_tables":
+		{
+			"OrderItem_Orders":"output/OrderItem_Orders.csv",
+			"Orders_Customer":"output/Orders_Customer.csv",
+			"OrderItem_Product":"output/OrderItem_Product.csv"
+		},
+
+	"transformations":[
+
+		{
+			"src_table":"Orders",
+			"src_column":"Year_month_date",
+			"target_column":"Date_month_year",
+			"operation": "change_date_format"
+		},
+
+		{
+			"src_table": "Customer",
+			"src_column": ["FirstName","LastName"],
+			"target_column": "FullName",
+			"operation": "concat"
+		},
+
+		{
+			"src_table":"Customer",
+			"src_column": ["Address"],
+            "target_columns": ["street","city_Pin_Code"],
+			"operation": "split"
+		},
+
+		{
+			"src_table":"Customer",
+			"src_columns": ["Address","FirstName","LastName"],
+            "operation": "drop"
+		},
+		
+		{
+			"src_table":"Orders",
+			"src_columns": ["Year_month_date"],
+            "operation": "drop"
+		},
+
+		{
+			"src_tables":
+				{
+					"table1":"OrderItem", 
+					"table2": "Orders"
+				},
+                	"join_criteria": 
+				{ 
+					"table1" : "OrderID", 
+					"table2" : "OrderID"
+				},
+                	"join_type": "inner",
+			"target_name":"OrderItem_Orders",
+			"operation": "join"
+		},
+
+		{
+			"src_tables":
+				{
+					"table1":"Orders", 
+					"table2": "Customer"
+				},
+                	"join_criteria": 
+				{ 
+					"table1" : "CustomerID", 
+					"table2" : "CustomerID"
+				},
+                	"join_type": "inner",
+			"target_name":"Orders_Customer",
+			"operation": "join"
+		},
+
+		{
+			"src_tables":
+				{
+					"table1":"OrderItem", 
+					"table2": "Product"
+				},
+                	"join_criteria": 
+				{ 
+					"table1" : "ProductID", 
+					"table2" : "ProductID"
+				},
+                	"join_type": "inner",
+			"target_name":"OrderItem_Product",
+			"operation": "join"
+		}
+
+	]
+}
